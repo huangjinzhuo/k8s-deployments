@@ -132,3 +132,56 @@ curl -ks https://`kubectl get svc frontend -o=jsonpath="{.status.loadBalancer.in
 #       port: 80
 #       targetPort: 80
 
+
+
+# blue/green deployment
+kubectl apply -f services/hello-blue.yaml
+# apiVersion: extensions/v1beta1
+# kind: Deployment
+# metadata:
+#   name: hello-green
+# spec:
+#   replicas: 3
+#   template:
+#     metadata:
+#       labels:
+#         app: hello
+#         track: stable
+#         version: 2.0.0
+#     spec:
+#       containers:
+#         - name: hello
+#           image: kelseyhightower/hello:2.0.0
+#           ports:
+#             - name: http
+#               containerPort: 80
+#             - name: health
+#               containerPort: 81
+#           resources:
+#             limits:
+#               cpu: 0.2
+#               memory: 10Mi
+#           livenessProbe:
+#             httpGet:
+#               path: /healthz
+#               port: 81
+#               scheme: HTTP
+#             initialDelaySeconds: 5
+#             periodSeconds: 15
+#             timeoutSeconds: 5
+#           readinessProbe:
+#             httpGet:
+#               path: /readiness
+#               port: 81
+#               scheme: HTTP
+#             initialDelaySeconds: 5
+#             timeoutSeconds: 1
+
+kubectl create -f deployments/hello-green.yaml
+curl -ks https://`kubectl get svc frontend -o=jsonpath="{.status.loadBalancer.ingress[0].ip}"`/version
+kubectl apply -f services/hello-green.yaml
+curl -ks https://`kubectl get svc frontend -o=jsonpath="{.status.loadBalancer.ingress[0].ip}"`/version
+
+# blue-green rollback
+kubectl apply -f services/hello-blue.yaml
+curl -ks https://`kubectl get svc frontend -o=jsonpath="{.status.loadBalancer.ingress[0].ip}"`/version
