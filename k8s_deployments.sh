@@ -11,7 +11,7 @@ kubectl explain deployment
 kubectl explain deployment --recursive
 kubectl explain deployment.metadata.name
 
-sudo sed "s/auth:1.0.0/auth:2.0.0/g" deployments/auth.yaml
+sudo sed "s/auth:2.0.0/auth:1.0.0/g" deployments/auth.yaml
 
 kubectl create -f deployments/auth.yaml
 kubectl create -f services/auth.yaml
@@ -51,6 +51,16 @@ curl http://`kubectl get service frontend -o jsonpath="{.status.loadBalancer.ing
 
 kubectl explain deployment --recursive
 kubectl explain deployment.metadata.name
+kubectl explain deployment.spec.replicas
+
+kubectl scale deployment hello --replicas=5
+kubectl scale deployment hello --replicas=3
+
+kubectl edit deployment hello
+# change hello:1.0.0 back to hello:2.0.0
+#  rollout update automatically start once the file deployment/hello.yaml is changed.
+
+kubectl get replicasets
 
 kubectl rollout status deployment xxxxx
 
@@ -65,6 +75,7 @@ kubectl rollout history deployment/xxxxx
 # REVISION  CHANGE-CAUSE
 # 1         kubectl apply --filename=apache_deployment.yaml --record=true
 # 2         kubectl set image deployment apache-deployment frontend=nginx:1.7.9 --record=true
+
 
 kubectl rollout undo deployment xxxxx
 # will roll back to version 1. Check pod image to verify:
@@ -84,6 +95,15 @@ kubectl get replicasets
 #     maxSurge: 1
 #     maxUnavailable: 50%
 
+
+
+kubectl scale deployment xxxxx --replicas=6
+kubectl autoscale deployment xxxxx --min=6 --max=10 --cpu-percent=70
+
+
+
+
+
 # Canary Deployment
 #
 # spec:
@@ -91,6 +111,24 @@ kubectl get replicasets
 #   type: Canary
 #   canaryUpdate:
     
+#  create canary deployment
+kubectl create -f deployments/hello-canary.yaml
+kubectl get deployments
 
-kubectl scale deployment xxxxx --replicas=6
-kubectl autoscale deployment xxxxx --min=6 --max=10 --cpu-percent=70
+# run curl several times and you can see version 1 and 2. 75%:25%
+curl -ks https://`kubectl get svc frontend -o=jsonpath="{.status.loadBalancer.ingress[0].ip}"`/version
+
+# canary deployment in production should use sessionAffinity=clientIP in service yaml file
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: "hello"
+# spec:
+#   sessionAffinity: ClientIP
+#   selector:
+#     app: "hello"
+#   ports:
+#     - protocol: "TCP"
+#       port: 80
+#       targetPort: 80
+
