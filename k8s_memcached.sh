@@ -62,3 +62,77 @@ python
     # client.get('mykey')
 # output is b'hello'
     # exit()
+
+
+
+#### Mcrouter - connection pooling. For those cases of too many connections
+# delete previous Helm deploy
+helm delete mycache --purge
+# deploy new Helm chart that includes memcache and mcrouter
+helm install stable/mcrouter --name=mycache --set memcached.replicaCount=3
+
+# test the deployment
+MCROUTER_POD_IP=$(kubectl get pods -l app=mycache-mcrouter -o jsonpath="{.items[0].status.podIP}")
+kubectl run -it alpine --rm --image=alpine:3.6 --restart=Never telnet $MCROUTER_POD_IP 5000
+# inside telnet prompt:
+    #   store a key
+        #   set anotherkey 0 0 15
+        #   hello Mcrouter
+        #   get anotherkey
+    #   VALUE anotherkey 0 15
+        #   hello Mcrouter
+        #   END
+        #   quit
+
+
+
+#### Reduce latency
+# need 3 points to reduce latency
+# 1. One Mcrouter proxy pod for each node (and usaually deploy with a DaemonSet Controller). The DaemonSet Controller will add/remove proxy pod as number of nodes changes
+# 2. A hostPort value in the proxy container's Kubernetes parameters. That parameter makes the node listen to that hostPort and redirect traffic to the proxy.
+# 3. Node name. Expose the node name as env variable inside the app pods by using the spec.env entry and selecting the spec.nodeName fieldRef value. 
+# ( https://kubernetes.io/docs/tasks/inject-data-application/environment-variable-expose-pod-information/ )
+
+# step 1 and 2 have been done by the Helm chart. step 3:
+# when deploy and applicaiton, make sure env variable NODE_NAME is in the yaml file. such as:
+cat <<EOF | kubectl create -f -
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sample-application-py
+spec:
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: sample-application-py
+    spec:
+      containers:
+        - name: python
+          image: python:3.6-alpine
+          command: [ "sh", "-c"]
+          args:
+          - while true; do sleep 10; done;
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+EOF
+
+# verify the node name is exposed to each pod by looking into one of the app pods
+POD=$(kubectl get pods -l app=sample-application-py -o jsonpath="{.items[0].metadata.name}")
+kubectl exec -it $POD -- sh -c 'echo $NODE_NAME'
+# output: gke-demo-cluster-default-pool-XXXXXXXX-XXXX
+
+# then in Python code lines, can use the NODE_NAME env variable to locate the Mcrouter in the same node. Example:
+    # import os
+    # from pymemcache.client.base import Client
+
+    # NODE_NAME = os.environ['NODE_NAME']
+    # client = Client((NODE_NAME, 5000))
+    # client.set('some_key', 'some_value')
+    # result = client.get('some_key')
+    # result
+# output b'some value'
+
