@@ -20,7 +20,7 @@ kubectl create clusterrolebinding tiller \
 --serviceaccount=kube-system:tiller
 
 # Init Tiller and update available charts
-helm init --serviceaccount=tiller
+helm init --service-account=tiller
 helm repo update
 
 # Install memcached Helm chat
@@ -50,6 +50,9 @@ telnet mycache-memcached-0.mycache-memcached.default.svc.cluster.local 11211
 # use endpoints in Python. (need pymemcache library)
 # start a shell and install pymemcache
 kubectl run -it alpine --rm --image=alpine:3.6 --restart=Never sh
+/sbin/apk update
+/sbin/apk add python
+/sbin/apk add py-pip
 pip install pymemcache
 python
 # run the following in Python console(>>>)
@@ -62,6 +65,7 @@ python
     # client.get('mykey')
 # output is b'hello'
     # exit()
+    # exit
 
 
 
