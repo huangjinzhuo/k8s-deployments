@@ -122,7 +122,6 @@ EOF
 
 
 
-
 #### Zone failure
 # Obtain current node of the WordPress pod
 NODE=$(kubectl get pods -l app=wp-repd-wordpress -o jsonpath='{.items..spec.nodeName}')
