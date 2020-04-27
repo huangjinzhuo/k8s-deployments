@@ -124,23 +124,23 @@ EOF
 
 #### Zone failure
 # Obtain current node of the WordPress pod
-NODE=$(kubectl get pods -l app=wp-repd-wordpress -o jsonpath='{.items..spec.nodeName}')
+#NODE=$(kubectl get pods -l app=wp-repd-wordpress -o jsonpath='{.items..spec.nodeName}')
+NODE=$(kubectl get pods -l app.kubernetes.io/instance=wp-repd -o jsonpath='{.items..spec.nodeName}')
 ZONE=$(kubectl get node $NODE -o jsonpath="{.metadata.labels['failure-domain\.beta\.kubernetes\.io/zone']}")
-
 IG=$(gcloud compute instance-groups list --filter="name~gke-repd-default-pool zone:(${ZONE})" --format='value(name)')
-
 echo "Pod is currently on node ${NODE}"
 echo "Instance group to delete: ${IG} for zone: ${ZONE}"
 
 # or verify with
-kubectl get pods -l app=wp-repd-wordpress -o wide
+# kubectl get pods -o wide -l app=wp-repd-wordpress
+  kubectl get pods -o wide -l app.kubernetes.io/instance=wp-repd
 
 # delete the instance group for the node where WordPress pod is running. Click "Y" to delete
 gcloud compute instance-groups managed delete ${IG} --zone ${ZONE}
 # failure occured. Kubenetes migrates the pod to a node in another zone
 
 # verify WordPress pod and persistent volume are in other zone
-kubectl get pods -l app=wp-repd-wordpress -o wide
-
+# kubectl get pods -o wide -l app=wp-repd-wordpress
+  kubectl get pods -o wide -l app.kubernetes.io/instance=wp-repd
 # verify app is still running
 echo http://$SERVICE_IP/admin
