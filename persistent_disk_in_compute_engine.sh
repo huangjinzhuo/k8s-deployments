@@ -8,6 +8,8 @@ gcloud compute instances create myinstance --zone=$ZONE
 # create a persistent disk
 gcloud compute disks create mydisk --size=200GB --zone=$ZONE
 # default disk type is pd-strandard
+gcloud compute disk list
+# you can see the persistent disk as well as the boot persistent disk are both listed.
 
 # attach the persistent disk to an instance
 gcloud compute instances attach-disk myinstance --disk=mydisk --zone=$ZONE
