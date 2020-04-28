@@ -123,6 +123,7 @@ EOF
 
 
 #### Zone failure
+
 # Obtain current node of the WordPress pod
 #NODE=$(kubectl get pods -l app=wp-repd-wordpress -o jsonpath='{.items..spec.nodeName}')
 NODE=$(kubectl get pods -l app.kubernetes.io/instance=wp-repd -o jsonpath='{.items..spec.nodeName}')
@@ -136,6 +137,7 @@ echo "Instance group to delete: ${IG} for zone: ${ZONE}"
   kubectl get pods -o wide -l app.kubernetes.io/instance=wp-repd
 
 # delete the instance group for the node where WordPress pod is running. Click "Y" to delete
+# (can't directly delete the instances in the IG because the instances are managed by the group)
 gcloud compute instance-groups managed delete ${IG} --zone ${ZONE}
 # failure occured. Kubenetes migrates the pod to a node in another zone
 
