@@ -140,6 +140,7 @@ echo "Instance group to delete: ${IG} for zone: ${ZONE}"
 # (can't directly delete the instances in the IG because the instances are managed by the group)
 gcloud compute instance-groups managed delete ${IG} --zone ${ZONE}
 # failure occured. Kubenetes migrates the pod to a node in another zone
+# the deleted instance group is not automatically re-created.
 
 # verify WordPress pod and persistent volume are in other zone
 # kubectl get pods -o wide -l app=wp-repd-wordpress
