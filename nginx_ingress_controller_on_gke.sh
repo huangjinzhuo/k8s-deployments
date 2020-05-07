@@ -57,4 +57,4 @@ kubectl get ingress ingress-resource
 http://external-ip-of-ingress-controller/healthz        # return 200 from default backend service
 http://external-ip-of-ingress-controller/hello          # return hello page from hello service
 http://external-ip-of-ingress-controller/               # return 404 from default backend service
-http://external-ip-of-ingress-resource/hello            # page not reachable
+http://external-ip-of-ingress-resource/hello            # page not reachable. Check firewall...
