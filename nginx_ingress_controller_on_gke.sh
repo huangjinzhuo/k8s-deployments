@@ -26,9 +26,9 @@ helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true
 kubectl get service nginx-ingress-controller
 
 
-# Deploy a web app
+# Deploy a web app and expose the deployment as a Service on port 8080
 kubectl create deployment hello-app --image=gcr.io/google-samples/hello-app:1.0
-
+kubectl expose deployment hello-app  --port=8080
 
 # Config Ingress Resource to use NGINX Ingress Controller
 # The Ingress Resource  determines which controller to utilize by setting with an annotation: kubernetes.io/ingress.class
