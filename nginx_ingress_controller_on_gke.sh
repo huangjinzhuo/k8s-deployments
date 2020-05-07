@@ -51,9 +51,10 @@ spec:
 EOF
 kubectl apply -f ingress-resource.yaml
 kubectl get ingress ingress-resource
-# Wait to get the External IP Address
+# Wait to get the External IP Address. Notice that the external IPs are different for ingress-resource and nginx-ingress-controller 
 
 # Test NGINX Ingress. Using a GCP L4 TCP/UDP Load Balancer frontend IP, and ensure it can access the web app.
 http://external-ip-of-ingress-controller/healthz        # return 200 from default backend service
 http://external-ip-of-ingress-controller/hello          # return hello page from hello service
 http://external-ip-of-ingress-controller/               # return 404 from default backend service
+http://external-ip-of-ingress-resource/hello            # page not reachable
