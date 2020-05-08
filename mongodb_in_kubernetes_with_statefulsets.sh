@@ -95,3 +95,6 @@ kubectl get pods
 # connect to the first replicaset memeber (mango-0)
 kubectl exec -it mango-0 mongo
 
+# instantiate the replicaset, and print the replicaset configuration
+rs.initiate()
+rs.conf()
