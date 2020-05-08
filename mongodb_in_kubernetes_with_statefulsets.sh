@@ -89,3 +89,9 @@ nano mongo-statefulset.yaml
 
 # deploy headless(no load balancing) service, and statefulset
 kubectl apply -f mongo-statefulset.yaml
+kubectl get statefulset
+kubectl get pods
+
+# connect to the first replicaset memeber (mango-0)
+kubectl exec -it mango-0 mongo
+
