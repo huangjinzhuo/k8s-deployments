@@ -86,3 +86,4 @@ cat mongo-statefulset.yaml
 
 # use nano or other editor to remove the two lines: - "--smallfiles"       - "--noprealloc"
 nano mongo-statefulset.yaml
+
