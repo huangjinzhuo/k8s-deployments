@@ -87,3 +87,5 @@ cat mongo-statefulset.yaml
 # use nano or other editor to remove the two lines: - "--smallfiles"       - "--noprealloc"
 nano mongo-statefulset.yaml
 
+# deploy headless(no load balancing) service, and statefulset
+kubectl apply -f mongo-statefulset.yaml
