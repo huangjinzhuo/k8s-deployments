@@ -98,3 +98,18 @@ kubectl exec -it mango-0 mongo
 # instantiate the replicaset, and print the replicaset configuration
 rs.initiate()
 rs.conf()
+
+
+# scaling the MongoDB replicaset
+kubectl scale --replicas=5 statefulset mongo
+kubectl get pods
+kubectl scale --replicas=3 statefulset mongo
+kubectl get pods
+
+# using the MongoDB replicaset
+# each pod in a statefulset DNS name: pod-name.service-name
+# mongodb connection string format is:
+# mongodb://[username:password@]host1[:port1][,...hostN[:portN]][/[defaultauthdb][?options]]
+# https://docs.mongodb.com/manual/reference/connection-string/
+mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017:/dbname-?
+
