@@ -83,7 +83,6 @@ cat mongo-statefulset.yaml
 #         requests:
 #           storage: 100Gi
 
-
 # use nano or other editor to remove the two lines: - "--smallfiles"       - "--noprealloc"
 nano mongo-statefulset.yaml
 
