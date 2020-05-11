@@ -94,10 +94,10 @@ kubectl get pods
 # connect to the first replicaset memeber (mango-0)
 kubectl exec -it mongo-0 mongo
 
-# instantiate the replicaset, and print the replicaset configuration
+# instantiate the replicaset, and print the replicaset configuration, which gives parameters such as different timeout settings
 rs.initiate()
 rs.conf()
-
+# control-c to exit mongodb
 
 # scaling the MongoDB replicaset
 kubectl scale --replicas=5 statefulset mongo
