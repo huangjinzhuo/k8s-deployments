@@ -111,4 +111,3 @@ kubectl get pods
 # mongodb://[username:password@]host1[:port1][,...hostN[:portN]][/[defaultauthdb][?options]]
 # https://docs.mongodb.com/manual/reference/connection-string/
 mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017:/dbname-?
-
